@@ -1,4 +1,3 @@
-
 class BSTree:
     nodes_read = 0
     nodes_written = 0

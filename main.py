@@ -1,3 +1,5 @@
+import random
+
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
@@ -6,7 +8,7 @@ import time
 from btree import BTree
 from binarysearchtree import BSTree
 
-btree_instance = BTree(5)
+btree_instance = BTree(3)
 bstree_instance = BSTree(1)
 
 def measure_tree_performance(tree, keys, performance):
@@ -14,27 +16,30 @@ def measure_tree_performance(tree, keys, performance):
     write_counts = []
     times = []
 
+    btree = isinstance(tree, BTree)
+
     for key in keys:
-        start_time = time.time()*1000 #time in ms
+        start_time = time.perf_counter()*1000 #time in ms
 
         if(performance == "Insert"):
-          if(isinstance(tree, BTree)):
+          if(btree):
             btree_instance.insert(key)
           else:
             bstree_instance.insert(key)
         elif(performance == "Search"):
-          if(isinstance(tree, BTree)):
+          if(btree):
             btree_instance.search(key)
           else:
             bstree_instance.search(key)
         elif(performance == "Delete"):
-          if(isinstance(tree, BTree)):
+          if(btree):
             btree_instance.delete(btree_instance.root, key)
           else:
             bstree_instance.delete(key)
 
-        times.append(time.time()*1000 - start_time)
-        if(isinstance(tree, BTree)):
+        end_time = time.perf_counter()*1000
+        times.append(end_time - start_time)
+        if(btree):
           read_counts.append(tree.nodes_read)
           write_counts.append(tree.nodes_written)
         else:
@@ -49,22 +54,22 @@ def plot_performance(keys, times, read_counts, write_counts, performance):
 
     plt.subplot(3, 1, 1)
     if(performance == "Insert"):
-      plt.plot(keys, times, label="Insert Time")
+      plt.scatter(keys, times, label="Insert Time")
     if(performance == "Search"):
-      plt.plot(keys, times, label="Search Time")
+      plt.scatter(keys, times, label="Search Time")
     if(performance == "Delete"):
-     plt.plot(keys, times, label="Delete Time")
+     plt.scatter(keys, times, label="Delete Time")
 
     plt.ylabel('Time (ms)')
     plt.legend()
 
     plt.subplot(3, 1, 2)
-    plt.plot(keys, read_counts, label="Read Nodes", color='orange')
+    plt.scatter(keys, read_counts, label="Read Nodes", color='orange')
     plt.ylabel('Read Nodes')
     plt.legend()
 
     plt.subplot(3, 1, 3)
-    plt.plot(keys, write_counts, label="Written Nodes", color='green')
+    plt.scatter(keys, write_counts, label="Written Nodes", color='green')
     plt.ylabel('Written Nodes')
     plt.legend()
 
@@ -77,7 +82,8 @@ def plot_performance(keys, times, read_counts, write_counts, performance):
 
 #-----------------------------------------------------------------------------
 #btree perfomances with 99 keys
-keys = list(range(1, 100))  # [1, .... , 99] keys
+#keys = list(range(1, 100))  # [1, .... , 99] keys
+keys = [random.randint(1, 20) for _ in range(20)]
 
 times, reads, writes = measure_tree_performance(btree_instance, keys, "Insert")
 plot_performance(keys, times, reads, writes, "Insert")

@@ -128,68 +128,53 @@ class BTree:
             self.insert_non_full(x.children[i], k) # recursive call on the
                                                    # correct subtree
 
-    def delete(self, x, k): # k: key to delete
+    def delete(self, x, k):  # k: key to delete
         t = self.t
         self.read_node(x)
-        i = 0 # index used to scan x's keys
+        i = 0  # index used to scan x's keys
 
-        while i < len(x.keys) and k > x.keys[i]: # we have to scan x's keys
-                                                 # in order to find the position
-                                                 # for k
+        while i < len(x.keys) and k > x.keys[i]:  # scan keys to find k's position
             i += 1
 
-        if x.leaf: # case 1: deleting key from a leaf
+        if x.leaf:  # case 1: deleting key from a leaf
             if i < len(x.keys) and x.keys[i] == k:
-                x.keys.pop(i) # if x is a leaf node, then k can be delete
-                              # directly
+                x.keys.pop(i)  # delete k directly from leaf node
+                self.write_node(x)  # write node after deletion
+            return  # end method here for leaf deletion
 
-                self.write_node(x)  # Write node after deletion
-
-            return # method terminated
-
-        if i < len(x.keys) and x.keys[i] == k: # deleting from an internal node
-                                               # case 2
+        if i < len(x.keys) and x.keys[i] == k:  # case 2: delete from internal node
             return self.delete_internal_node(x, k, i)
 
-        # case 3a: child has a sufficient number of keys to assure key deficit
-        # doesn't occur
-        elif len(x.children[i].keys) >= t: # if ith node has at least t keys
-                                           # we have to call recursively method
-                                           # delete on x
-
+        # case 3a: child has enough keys to avoid deficit
+        elif i < len(x.children) and len(x.children[i].keys) >= t:
             self.delete(x.children[i], k)
 
-        else: # child node has less than t key, hence child node have to be
-              # rebalanced with his siblings
-            if i != 0 and i + 2 < len(x.children):
-                if len(x.children[i - 1].keys) >= t: # if left sibling has at
-                                                     # least t keys
-                    self.delete_sibling(x, i, i - 1) # then it used to rebalance
-                                                     # current node
-                elif len(x.children[i + 1].keys) >= t: # if right sibling has at
-                                                       # least t keys
-                    self.delete_sibling(x, i, i + 1) # then it used to rebalance
-                                                     # current node
-                else: # neither of sibling don't have at least t keys
-                    self.delete_merge(x, i, i + 1) # then the two child nodes
-                                                   # are united through this
-                                                   # method
+        else:  # rebalancing child node with siblings
+            if i > 0 and i < len(x.children) - 1:
+                if len(x.children[i - 1].keys) >= t:  # rebalance with left sibling
+                    self.delete_sibling(x, i, i - 1)
+                elif len(x.children[i + 1].keys) >= t:  # rebalance with right sibling
+                    self.delete_sibling(x, i, i + 1)
+                else:  # if neither sibling has enough keys
+                    self.delete_merge(x, i, i + 1)
 
-            elif i == 0: # we have to try to rebalance with right sibling
+            elif i == 0:  # rebalance with right sibling if i is the first child
                 if len(x.children[i + 1].keys) >= t:
                     self.delete_sibling(x, i, i + 1)
                 else:
                     self.delete_merge(x, i, i + 1)
 
-            elif i + 1 == len(x.children): # we have to try to rebalance with
-                                           # left sibling
+            elif i == len(x.children) - 1:  # rebalance with left sibling if i is last child
                 if len(x.children[i - 1].keys) >= t:
                     self.delete_sibling(x, i, i - 1)
                 else:
                     self.delete_merge(x, i, i - 1)
 
-            self.delete(x.children[i], k) # recursively call after rebalancing
-                                          # or uniting
+            # Recursive delete on child node after rebalancing
+            if i < len(x.children):  # Check if child index is still valid
+                self.delete(x.children[i], k)
+
+
 
     def delete_internal_node(self, x, k, i): # method for deleting key k from
                                              # internal node x at position i
