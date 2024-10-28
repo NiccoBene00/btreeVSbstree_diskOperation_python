@@ -30,6 +30,4 @@ The efficiency of disk operations, such as read and write access, largely depend
   - Prone to inefficiency with frequent disk reads and writes in large datasets.
   - Potential for increased height in unbalanced scenarios, leading to high disk I/O costs.
 
-In summary, while BSTs may be suitable for in-memory operations and smaller datasets, B-Trees offer a distinct advantage for disk-based applications by minimizing disk operations, making them preferable in database indexing and file systems.
-
 
