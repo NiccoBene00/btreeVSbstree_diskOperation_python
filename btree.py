@@ -26,7 +26,7 @@ class BTree:
         self.read_node(node)
 
         i = 0
-        while i < len(node.keys) and key > node.keys[i]:
+        while i < len(node.keys) and node.keys[i] is not None and key > node.keys[i]:
             i += 1
         if i < len(node.keys) and key == node.keys[i]:
             return (node, i)
@@ -100,7 +100,7 @@ class BTree:
         # find the correct spot in the leaf to insert the key
         if x.leaf:
             x.keys.append(None) # append a null spot for the new key
-            while i >= 0 and k < x.keys[i]: # we move backward
+            while i >= 0 and x.keys[i] is not None and k < x.keys[i]: # we move backward
                 x.keys[i + 1] = x.keys[i] # moving current key one spot to the
                                           # right to make room for k
                 i -= 1 # moving backward
@@ -110,7 +110,7 @@ class BTree:
 
         # if x is not a leaf, find the correct subtree to insert the key
         else:
-            while i >= 0 and k < x.keys[i]:
+            while i >= 0 and x.keys[i] is not None and k < x.keys[i]:
                 i -= 1
             i += 1 # increase i in order to obtain correct index that reference
                    # the child where go down
@@ -121,7 +121,7 @@ class BTree:
             if len(x.children[i].keys) == (2 * t) - 1:
                 self.split_child(x, i) # this method move the median key in x,
                                        # then divide the child
-                if k > x.keys[i]: # after division, if the k is greater than
+                if x.keys[i] is not None and k > x.keys[i]: # after division, if the k is greater than
                                   # median key just added in x, the insert must
                                   # go on the right subtree
                     i += 1        # increase i means move to the new child
@@ -133,7 +133,8 @@ class BTree:
         self.read_node(x)
         i = 0  # index used to scan x's keys
 
-        while i < len(x.keys) and k > x.keys[i]:  # scan keys to find k's position
+        while i < len(x.keys) and x.keys[i] is not None and k > x.keys[i]:
+            # scan keys to find k's position
             i += 1
 
         if x.leaf:  # case 1: deleting key from a leaf

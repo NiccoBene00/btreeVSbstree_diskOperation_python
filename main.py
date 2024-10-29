@@ -52,78 +52,106 @@ def measure_tree_performance(tree, keys, performance):
 def plot_performance(keys, times, read_counts, write_counts, performance):
     plt.figure(figsize=(10, 6))
 
+
     plt.subplot(3, 1, 1)
+
     if(performance == "Insert"):
-      plt.scatter(keys, times, label="Insert Time")
+      plt.scatter(keys, times, label="Insert Time", s = 10)
     if(performance == "Search"):
-      plt.scatter(keys, times, label="Search Time")
+      plt.scatter(keys, times, label="Search Time", s = 10)
     if(performance == "Delete"):
-     plt.scatter(keys, times, label="Delete Time")
+     plt.scatter(keys, times, label="Delete Time", s = 10)
 
     plt.ylabel('Time (ms)')
     plt.legend()
 
+
     plt.subplot(3, 1, 2)
-    plt.scatter(keys, read_counts, label="Read Nodes", color='orange')
+    plt.scatter(keys, read_counts, label="Read Nodes", color='orange', s = 10)
     plt.ylabel('Read Nodes')
     plt.legend()
 
     plt.subplot(3, 1, 3)
-    plt.scatter(keys, write_counts, label="Written Nodes", color='green')
     plt.ylabel('Written Nodes')
+    if(performance == "Insert" or performance == "Delete"):
+        plt.scatter(keys, write_counts, label="Written Nodes", color='green', s = 10)
+    else:
+        plt.plot(0,0, label = "Written Nodes", color = 'green')
     plt.legend()
 
     if(performance == "Insert"):
-      plt.xlabel('Added keys')
+        plt.xlabel('Added keys')
     if(performance == "Delete"):
-      plt.xlabel('Deleted keys')
+        plt.xlabel('Deleted keys')
+
     plt.tight_layout()
     plt.show()
 
 #-----------------------------------------------------------------------------
-#btree perfomances with 99 keys
-#keys = list(range(1, 100))  # [1, .... , 99] keys
-keys = [random.randint(1, 20) for _ in range(20)]
-
-times, reads, writes = measure_tree_performance(btree_instance, keys, "Insert")
-plot_performance(keys, times, reads, writes, "Insert")
-times, reads, writes = measure_tree_performance(btree_instance, keys, "Delete")
-plot_performance(keys, times, reads, writes, "Delete")
-
-#-----------------------------------------------------------------------------
-#btree perfomances with 999 keys
-keys = list(range(1, 1000))  # [1, .... , 999] keys
-
-times, reads, writes = measure_tree_performance(btree_instance, keys, "Insert")
-plot_performance(keys, times, reads, writes, "Insert")
-times, reads, writes = measure_tree_performance(btree_instance, keys, "Delete")
-plot_performance(keys, times, reads, writes, "Delete")
-
-#-----------------------------------------------------------------------------
-
-
-#-----------------------------------------------------------------------------
-#bstree perfomances with 99 keys
-keys = list(range(1, 100))  # [1, .... , 99] keys
-
-times, reads, writes = measure_tree_performance(bstree_instance, keys, "Insert")
-plot_performance(keys, times, reads, writes, "Insert")
-times, reads, writes = measure_tree_performance(bstree_instance, keys, "Delete")
-plot_performance(keys, times, reads, writes, "Delete")
-#-----------------------------------------------------------------------------
-#bstree perfomances with 149 keys
-keys = list(range(1, 150))  # [1, .... , 999] keys
-
-times, reads, writes = measure_tree_performance(bstree_instance, keys, "Insert")
-plot_performance(keys, times, reads, writes, "Insert")
-times, reads, writes = measure_tree_performance(bstree_instance, keys, "Delete")
-plot_performance(keys, times, reads, writes, "Delete")
-#-----------------------------------------------------------------------------
-#bstree perfomances with 199 keys
-keys = list(range(1, 200))  # [1, .... , 99] keys
+# #btree perfomances with linear 99 keys
+# keys = list(range(1, 100))  # [1, .... , 99] keys
+#
+#
+# times, reads, writes = measure_tree_performance(btree_instance, keys, "Insert")
+# plot_performance(keys, times, reads, writes, "Insert")
+# times, reads, writes = measure_tree_performance(btree_instance, keys, "Search")
+# plot_performance(keys, times, reads, writes, "Search")
+# times, reads, writes = measure_tree_performance(btree_instance, keys, "Delete")
+# plot_performance(keys, times, reads, writes, "Delete")
+# #-----------------------------------------------------------------------------
+# #btree perfomances with linear 999 keys
+# btree_instance = BTree(3)
+# keys = list(range(1, 1000)) # [1, ... , 999] keys
+#
+# times, reads, writes = measure_tree_performance(btree_instance, keys, "Insert")
+# plot_performance(keys, times, reads, writes, "Insert")
+# times, reads, writes = measure_tree_performance(btree_instance, keys, "Search")
+# plot_performance(keys, times, reads, writes, "Search")
+# times, reads, writes = measure_tree_performance(btree_instance, keys, "Delete")
+# plot_performance(keys, times, reads, writes, "Delete")
+# #-----------------------------------------------------------------------------
+# #btree performances with random 99 keys
+# keys = [random.randint(1, 100) for _ in range(100)] # 99 random keys
+#
+# times, reads, writes = measure_tree_performance(btree_instance, keys, "Insert")
+# plot_performance(keys, times, reads, writes, "Insert")
+# times, reads, writes = measure_tree_performance(btree_instance, keys, "Search")
+# plot_performance(keys, times, reads, writes, "Search")
+# times, reads, writes = measure_tree_performance(btree_instance, keys, "Delete")
+# plot_performance(keys, times, reads, writes, "Delete")
+# #-----------------------------------------------------------------------------
+#btree performances with random 999 keys
+keys = [random.randint(1,1000) for _ in range (1000)] # random 999 keys
 
 times, reads, writes = measure_tree_performance(bstree_instance, keys, "Insert")
 plot_performance(keys, times, reads, writes, "Insert")
+times, reads, writes = measure_tree_performance(bstree_instance, keys, "Search")
+plot_performance(keys, times, reads, writes, "Search")
 times, reads, writes = measure_tree_performance(bstree_instance, keys, "Delete")
 plot_performance(keys, times, reads, writes, "Delete")
-#-----------------------------------------------------------------------------
+
+# #-----------------------------------------------------------------------------
+# #bstree perfomances with 99 keys
+# keys = list(range(1, 100))  # [1, .... , 99] keys
+#
+# times, reads, writes = measure_tree_performance(bstree_instance, keys, "Insert")
+# plot_performance(keys, times, reads, writes, "Insert")
+# times, reads, writes = measure_tree_performance(bstree_instance, keys, "Delete")
+# plot_performance(keys, times, reads, writes, "Delete")
+# #-----------------------------------------------------------------------------
+# #bstree perfomances with 149 keys
+# keys = list(range(1, 150))  # [1, .... , 999] keys
+#
+# times, reads, writes = measure_tree_performance(bstree_instance, keys, "Insert")
+# plot_performance(keys, times, reads, writes, "Insert")
+# times, reads, writes = measure_tree_performance(bstree_instance, keys, "Delete")
+# plot_performance(keys, times, reads, writes, "Delete")
+# #-----------------------------------------------------------------------------
+# #bstree perfomances with 199 keys
+# keys = list(range(1, 200))  # [1, .... , 99] keys
+#
+# times, reads, writes = measure_tree_performance(bstree_instance, keys, "Insert")
+# plot_performance(keys, times, reads, writes, "Insert")
+# times, reads, writes = measure_tree_performance(bstree_instance, keys, "Delete")
+# plot_performance(keys, times, reads, writes, "Delete")
+# #-----------------------------------------------------------------------------
