@@ -22,56 +22,33 @@ class BTree:
         self.nodes_written = 0
         self.nodes_read = 0
 
-
-    # def search(self, key, node=None):
-    #     if node is None:
-    #         node = self.root
-    #         self.read_node(node)
-    #
-    #     i = 0
-    #     while i < len(node.keys) and node.keys[i] is not None and key > node.keys[i]:
-    #         i += 1
-    #
-    #     if i < len(node.keys) and key == node.keys[i]:
-    #             return (node, i)
-    #
-    #     if node.leaf:
-    #         return None
-    #
-    #     child = node.children[i]
-    #     self.read_node(child)
-    #     return self.search(key, child)
-
     def search(self, key):
         """
-        Cerca la chiave nell'albero B a partire dalla radice.
+        Find the key inside B tree from the root through recursive call
         """
         self.nodes_read = 0  # Reset del contatore all'inizio di ogni ricerca
         return self._search_recursive(self.root, key)
 
     def _search_recursive(self, node, key):
-        """
-        Funzione di ricerca ricorsiva con un contatore che incrementa
-        solo quando si legge un nuovo nodo.
-        """
-        # Conta la lettura del nodo corrente
+
+        # read current node
         if(node != self.root):
             self.read_node(node)
 
-        # Trova la posizione della chiave nel nodo
+        # Find key's position inside the node
         i = 0
         while i < len(node.keys) and key > node.keys[i]:
             i += 1
 
-        # Se la chiave è trovata nel nodo corrente, restituisce il nodo e l'indice
+        # key founded, return node with key's index
         if i < len(node.keys) and key == node.keys[i]:
             return (node, i)
 
-        # Se il nodo è foglia, la chiave non è presente nell'albero
+        # If the node is a leaf, then the search failed because there is no such key
         if node.leaf:
             return None
 
-        # Altrimenti, procedi nel figlio appropriato
+        # otherwise search inside proper son
         return self._search_recursive(node.children[i], key)
 
     def insert(self, k):
