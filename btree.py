@@ -12,28 +12,94 @@ class BTree:
         self.nodes_written = 0 # counter written node
 
     def read_node(self, node):
-        """Simulate reading a node from disk."""
         self.nodes_read += 1
         return node
 
     def write_node(self, node):
-        """Simulate writing a node to disk."""
-        self.nodes_written += 1
+    	self.nodes_written += 1
+
+    def resetCounters(self):
+        self.nodes_written = 0
+        self.nodes_read = 0
 
 
-    def search(self, key, node=None):
-        node = self.root if node == None else node
-        self.read_node(node)
+    # def search(self, key, node=None):
+    #     if node is None:
+    #         node = self.root
+    #         self.read_node(node)
+    #
+    #     i = 0
+    #     while i < len(node.keys) and node.keys[i] is not None and key > node.keys[i]:
+    #         i += 1
+    #
+    #     if i < len(node.keys) and key == node.keys[i]:
+    #             return (node, i)
+    #
+    #     if node.leaf:
+    #         return None
+    #
+    #     child = node.children[i]
+    #     self.read_node(child)
+    #     return self.search(key, child)
 
+    def search(self, key):
+        """
+        Cerca la chiave nell'albero B a partire dalla radice.
+        """
+        self.nodes_read = 0  # Reset del contatore all'inizio di ogni ricerca
+        return self._search_recursive(self.root, key)
+
+    def _search_recursive(self, node, key):
+        """
+        Funzione di ricerca ricorsiva con un contatore che incrementa
+        solo quando si legge un nuovo nodo.
+        """
+        # Conta la lettura del nodo corrente
+        if(node != self.root):
+            self.read_node(node)
+
+        # Trova la posizione della chiave nel nodo
         i = 0
-        while i < len(node.keys) and node.keys[i] is not None and key > node.keys[i]:
+        while i < len(node.keys) and key > node.keys[i]:
             i += 1
+
+        # Se la chiave è trovata nel nodo corrente, restituisce il nodo e l'indice
         if i < len(node.keys) and key == node.keys[i]:
             return (node, i)
-        elif node.leaf:
+
+        # Se il nodo è foglia, la chiave non è presente nell'albero
+        if node.leaf:
             return None
-        else:
-            return self.search(key, node.children[i])
+
+        # Altrimenti, procedi nel figlio appropriato
+        return self._search_recursive(node.children[i], key)
+
+    def insert(self, k):
+        self.nodes_read = 0
+        self.nodes_written = 0
+        return self.insert_rec(k)
+
+    def insert_rec(self, k): # k: key to insert
+        t = self.t
+        root = self.root
+
+        # if root is full, create a new node - tree's height grows by 1
+        if len(root.keys) == (2 * t) - 1: # if the root is full then the tree
+                                          # height must increase
+            new_root = NodeBT() # a new empty node will be the new root
+            self.root = new_root # update the reference to the root
+            new_root.children.insert(0, root) # the old root become the first
+                                              # new root's child
+            self.split_child(new_root, 0) # calling this method we'll have
+                                          # the median key moving to the new
+                                          # root
+            #self.write_node(new_root)
+            self.insert_non_full(new_root, k) # the new root necessarily will be
+                                              # non full, hence is possible
+                                              # insert the key without further
+                                              # divisions
+        else: # the root is non full
+            self.insert_non_full(root, k)
 
     def split_child(self, x, i): # when a node is full, i.e. contains the max
                                  # number of possible keys, then I have to call
@@ -41,13 +107,15 @@ class BTree:
                                  # property
         t = self.t
 
-        y = self.read_node(x.children[i])
-        # y is a full child of x
-        #y = x.children[i] # child y contains 2t-1 keys (t:= minimum degree)
 
+        y = x.children[i] # y is a full child of x
+                          # hence y is node to split
+
+        #self.read_node(y)
         # create a new node and add it to x's list of children
         z = NodeBT(y.leaf) # if y was a leaf then z has to maintain the same
                            # state
+
         x.children.insert(i + 1, z) # we have to append a new child to the x's
                                     # children list
 
@@ -66,37 +134,17 @@ class BTree:
                                               # z node
             y.children = y.children[0: t] # y's children placed at the left of
                                           # median key remain in y
-        self.write_node(x)  # Write parent node
-        self.write_node(y)  # Write left child
-        self.write_node(z)  # Write right child
 
-    def insert(self, k): # k: key to insert
-        t = self.t
-        root = self.root
-
-        # if root is full, create a new node - tree's height grows by 1
-        if len(root.keys) == (2 * t) - 1: # if the root is full then the tree
-                                          # height must increase
-            new_root = NodeBT() # a new empty node will be the new root
-            self.root = new_root # update the reference to the root
-            new_root.children.insert(0, root) # the old root become the first
-                                              # new root's child
-            self.split_child(new_root, 0) # calling this method we'll have
-                                          # the median key moving to the new
-                                          # root
-            self.insert_non_full(new_root, k) # the new root necessarily will be
-                                              # non full, hence is possible
-                                              # insert the key without further
-                                              # divisions
-        else: # the root is non full
-            self.insert_non_full(root, k)
+        self.write_node(y)
+        self.read_node(z)
+        self.write_node(x)
 
     def insert_non_full(self, x, k):
         t = self.t
         i = len(x.keys) - 1 # i is equal to the index of the last key of x, in
                             # order to move backward for founding the correct
                             # spot of insert
-        self.read_node(x)
+        #self.read_node(x)
         # find the correct spot in the leaf to insert the key
         if x.leaf:
             x.keys.append(None) # append a null spot for the new key
@@ -106,8 +154,7 @@ class BTree:
                 i -= 1 # moving backward
             x.keys[i + 1] = k # assign k to the correct spot
 
-            self.write_node(x) # Write leaf node after inserting
-
+            self.write_node(x)
         # if x is not a leaf, find the correct subtree to insert the key
         else:
             while i >= 0 and x.keys[i] is not None and k < x.keys[i]:
@@ -115,32 +162,46 @@ class BTree:
             i += 1 # increase i in order to obtain correct index that reference
                    # the child where go down
 
-            child = self.read_node(x.children[i])
+            #child = self.read_node(x.children[i])
 
+            #
+            self.read_node(x.children[i])
             # if child node is full, split it
             if len(x.children[i].keys) == (2 * t) - 1:
                 self.split_child(x, i) # this method move the median key in x,
                                        # then divide the child
+                self.write_node(x.children[i])
                 if x.keys[i] is not None and k > x.keys[i]: # after division, if the k is greater than
                                   # median key just added in x, the insert must
                                   # go on the right subtree
                     i += 1        # increase i means move to the new child
+
+
             self.insert_non_full(x.children[i], k) # recursive call on the
                                                    # correct subtree
+    def delete(self, x, k):
+        self.nodes_read = 0
+        self.nodes_written = 0
+        self.delete_rec(x, k)
 
-    def delete(self, x, k):  # k: key to delete
+    def delete_rec(self, x, k):  # k: key to delete
         t = self.t
-        self.read_node(x)
         i = 0  # index used to scan x's keys
+
+        if(x != self.root):
+            self.read_node(x)
 
         while i < len(x.keys) and x.keys[i] is not None and k > x.keys[i]:
             # scan keys to find k's position
             i += 1
 
+
         if x.leaf:  # case 1: deleting key from a leaf
+                    # (means that I have achived lower level of the tree)
+            self.write_node(x)
             if i < len(x.keys) and x.keys[i] == k:
                 x.keys.pop(i)  # delete k directly from leaf node
-                self.write_node(x)  # write node after deletion
+                  # write node after deletion
             return  # end method here for leaf deletion
 
         if i < len(x.keys) and x.keys[i] == k:  # case 2: delete from internal node
@@ -148,34 +209,39 @@ class BTree:
 
         # case 3a: child has enough keys to avoid deficit
         elif i < len(x.children) and len(x.children[i].keys) >= t:
-            self.delete(x.children[i], k)
+            self.delete_rec(x.children[i], k)
 
         else:  # rebalancing child node with siblings
             if i > 0 and i < len(x.children) - 1:
                 if len(x.children[i - 1].keys) >= t:  # rebalance with left sibling
+                    self.read_node(x.children[i - 1])
                     self.delete_sibling(x, i, i - 1)
                 elif len(x.children[i + 1].keys) >= t:  # rebalance with right sibling
+                    self.read_node(x.children[i + 1])
                     self.delete_sibling(x, i, i + 1)
                 else:  # if neither sibling has enough keys
+                    self.read_node(x.children[i + 1])
                     self.delete_merge(x, i, i + 1)
 
             elif i == 0:  # rebalance with right sibling if i is the first child
                 if len(x.children[i + 1].keys) >= t:
+                    self.read_node(x.children[i + 1])
                     self.delete_sibling(x, i, i + 1)
                 else:
+                    self.read_node(x.children[i + 1])
                     self.delete_merge(x, i, i + 1)
 
             elif i == len(x.children) - 1:  # rebalance with left sibling if i is last child
                 if len(x.children[i - 1].keys) >= t:
+                    self.read_node(x.children[i - 1])
                     self.delete_sibling(x, i, i - 1)
                 else:
+                    self.read_node(x.children[i - 1])
                     self.delete_merge(x, i, i - 1)
 
             # Recursive delete on child node after rebalancing
             if i < len(x.children):  # Check if child index is still valid
-                self.delete(x.children[i], k)
-
-
+                self.delete_rec(x.children[i], k)
 
     def delete_internal_node(self, x, k, i): # method for deleting key k from
                                              # internal node x at position i
@@ -183,12 +249,14 @@ class BTree:
         if x.leaf:
             if x.keys[i] == k:
                 x.keys.pop(i)
+            self.write_node(x)
             return
 
         if len(x.children[i].keys) >= t: # case 2a: left child has at least t
                                          # keys
             # substitute k with predecessor key, i.e. the greater key of left
             # subtree
+            self.read_node(x.children[i])
             x.keys[i] = self.delete_predecessor(x.children[i])
             self.write_node(x)
             return
@@ -197,6 +265,7 @@ class BTree:
                                                # least t keys
             # substitute k with successor key, i.e. the minor key of right
             # subtree
+            self.read_node(x.children[i])
             x.keys[i] = self.delete_successor(x.children[i + 1])
             self.write_node(x)
             return
@@ -215,8 +284,10 @@ class BTree:
 
         n = len(x.keys) - 1 # n is the index of the last key in x (the greater
                             # key of the node)
+        self.read_node(x.children[n])
         if len(x.children[n].keys) >= self.t: # if right child of x has at least
                                               # t keys
+
             self.delete_sibling(x, n + 1, n) # then we can borrow a key from
                                              # sibling and balance the tree
         else: # the sibling has no sufficient keys to balance
@@ -233,7 +304,7 @@ class BTree:
             return x.keys.pop(0) # if x is leaf node, then successor is simply
                                  # the minor key of x
 
-
+        self.read_node(x.children[1])
         if len(x.children[1].keys) >= self.t: # if the left child of x (that
                                               # contains his successor) has at
                                               # least t keys
@@ -243,6 +314,7 @@ class BTree:
         else: # if the left child has no enough keys
             self.delete_merge(x, 0, 1) # union of the two children
 
+        self.read_node(x.children[0])
         self.delete_successor(x.children[0]) # recursive call
 
     # this method is used to fusion two children nodes (i,j) of x when one or
@@ -344,3 +416,4 @@ class BTree:
         if len(x.children) > 0:
             for i in x.children:
                 self.print_tree(i, level)
+
