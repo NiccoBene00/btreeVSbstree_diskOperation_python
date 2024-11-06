@@ -19,10 +19,6 @@ class BTree:
     def write_node(self, node):
         self.nodes_written += 1
 
-    def resetCounters(self):
-        self.nodes_written = 0
-        self.nodes_read = 0
-
     def search(self, key):
         """
         Find the key inside B tree from the root through recursive call

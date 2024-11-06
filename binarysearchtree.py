@@ -90,8 +90,8 @@ class BinarySearchTree:
             self.nodes_written += 1  # update key
             node.right = self._delete_recursive(node.right, min_larger_node.key)
 
-        if node is not None:
-            self.nodes_written += 1  # write update node
+        #if node is not None:
+        #    self.nodes_written += 1  # write update node
 
         return node
 
