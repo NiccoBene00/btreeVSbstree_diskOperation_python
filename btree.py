@@ -169,7 +169,7 @@ class BTree:
         if x != self.root:
             self.read_node(x)
 
-        while i < len(x.keys) and k > x.keys[i]:
+        while i < len(x.keys) and x.keys[i] is not None and k > x.keys[i]:
             # scan keys to find k's position
             i += 1
 

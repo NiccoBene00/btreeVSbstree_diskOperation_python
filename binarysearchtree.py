@@ -29,9 +29,10 @@ class BinarySearchTree:
             if node.left is None:
                 node.left = Node(key)
                 self.nodes_written += 1
+
             else:
                 self._insert_recursive(node.left, key)
-        elif key > node.key:
+        if key > node.key:
             if node.right is None:
                 node.right = Node(key)
                 self.nodes_written += 1
@@ -41,6 +42,7 @@ class BinarySearchTree:
     def search(self, key):
         self.nodes_read = 0  # reset counter before each new search operation
                              # Observation: counter for written nodes will be always 0
+        self.nodes_writte = 0
         found = self._search_recursive(self.root, key)
         return found
 

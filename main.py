@@ -1,5 +1,7 @@
 import random
 
+from packaging.tags import platform_tags
+
 from performanceInfographic import PlotGenerator
 from btree import BTree
 from binarysearchtree import BinarySearchTree
@@ -9,13 +11,30 @@ btree_instance = BTree(3)
 bstree_instance = BinarySearchTree()
 
 
-keys = list(range(1,100))
-pltGen.measure_tree_performance(bstree_instance, keys, "Insert")
-pltGen.plot_performance(keys, "Insert")
-pltGen.measure_tree_performance(bstree_instance, keys, "Search")
-pltGen.plot_performance(keys, "Search")
-pltGen.measure_tree_performance(bstree_instance, keys, "Delete")
-pltGen.plot_performance(keys, "Delete")
+keys = random.sample(range(1001), 900)
+#keys = list(range(1,30))
+timeInsBST = pltGen.measure_tree_performanceBST(bstree_instance, keys, "Insert")
+timeInsBT = pltGen.measure_tree_performanceBT(btree_instance, keys, "Insert")
+#pltGen.plot_performance(bstree_instance, keys, "Insert")
+keys = random.sample(range(1001), 900)
+timeDelBST = pltGen.measure_tree_performanceBST(bstree_instance, keys, "Delete")
+timeDelBT = pltGen.measure_tree_performanceBT(btree_instance, keys, "Delete")
+pltGen.plotComparingPerformances(keys, "Delete")
+print("Tot Insert time bstree: " + str(timeInsBST))
+print("Tot Insert time btree: " + str(timeInsBT))
+print("Tot Delete time bstree: " + str(timeDelBST))
+print("Tot Delete time btree: " + str(timeDelBT))
+
+#keys = random.sample(range(1001), 300)
+#timeDelBST = pltGen.measure_tree_performanceBST(bstree_instance, keys, "Delete")
+#timeDelBT = pltGen.measure_tree_performanceBT(btree_instance, keys, "Delete")
+#pltGen.plotComparingPerformances(keys, "Delete")
+#print("Tot Delete time bstree: " + str(timeDelBST))
+#print("Tot Delete time btree: " + str(timeDelBT))
+#keys = list(range(1,30))
+
+# pltGen.measure_tree_performance(bstree_instance, keys, "Delete")
+# pltGen.plot_performance(keys, "Delete")
 # -----------------------------------------------------------------------------
 # btree perfomances with linear 99 keys
 #keys = list(range(1, 100))  # [1, .... , 99] keys
@@ -61,9 +80,9 @@ pltGen.plot_performance(keys, "Delete")
 
 # #-----------------------------------------------------------------------------
 # bstree perfomances with 99 keys
-keys = list(range(1, 50))  # Crea una lista di numeri da 1 a 10
-#random.shuffle(keys) # mescola la lista in ordine casuale
-
+# keys = list(range(1, 10))  # Crea una lista di numeri da 1 a 10
+# random.shuffle(keys) # mescola la lista in ordine casuale
+#
 # for key in keys:
 #     bstree_instance.insert(key)
 # print(bstree_instance._print_tree(bstree_instance.root))
@@ -71,8 +90,8 @@ keys = list(range(1, 50))  # Crea una lista di numeri da 1 a 10
 # for key in keys:
 #     bstree_instance.delete(key)
 #     print("after delete key " + str(key) + ": " + str(bstree_instance._print_tree(bstree_instance.root)))
-
-#print(bstree_instance.nodes_read)
+#
+# print(bstree_instance.nodes_read)
 # print(bstree_instance.nodes_written)
 # print(bstree_instance._print_tree(bstree_instance.root))
 #
