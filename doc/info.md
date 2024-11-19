@@ -1,5 +1,5 @@
 > [!IMPORTANT]
-> Repository's content:
+> doc's folder content:
 > 
 > **documentation.pdf**: technical report about analisys and code implementation of the project;
 > 
