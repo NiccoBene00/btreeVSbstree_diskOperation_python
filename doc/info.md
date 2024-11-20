@@ -3,4 +3,4 @@
 > 
 > **<ins>documentation.pdf<ins>**: technical report about analisys and code implementation of the project;
 > 
-> **<ins>docTex.tex<ins>**: LaTex documentation version;
+> **<ins>docTex.zip<ins>**: zipped folder that contains LaTex documentation version;
