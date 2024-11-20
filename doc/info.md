@@ -1,6 +1,6 @@
 > [!IMPORTANT]
->  doc's folder content:
+>  DOC'S FOLDER CONTENT
 > 
 > **<ins>documentation.pdf<ins>**: technical report about analisys and code implementation of the project;
 > 
-> **docTex.tex**: LaTex documentation version;
+> **<ins>docTex.tex<ins>**: LaTex documentation version;
