@@ -35,9 +35,6 @@ class PlotGenerator:
             elif performance == "Delete":
                 bstree.delete(key)
 
-                   # tree.delete(tree.root, key)
-
-
             end_time = time.perf_counter()
             self.timesBST.append(end_time - start_time)
             self.read_countsBST.append(bstree.nodes_read)
