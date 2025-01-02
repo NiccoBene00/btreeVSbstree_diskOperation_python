@@ -58,7 +58,7 @@ class BTree:
         t = self.t
         root = self.root
 
-        # if root is full, create a new node - tree's height grows by 1
+        # if root is full, create a new node ---> tree's height grows by 1
         if len(root.keys) == (2 * t) - 1:  # if the root is full then the tree
             # height must increase
             new_root = NodeBT()  # a new empty node will be the new root
