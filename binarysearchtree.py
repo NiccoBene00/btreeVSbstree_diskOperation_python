@@ -16,7 +16,7 @@ class BinarySearchTree:
         self.nodes_read = 0
         self.nodes_written = 0
 
-        if self.root is None:
+        if self.root is None: #emptry tree
             self.root = Node(key)
             self.nodes_written += 1
         else:
@@ -27,23 +27,23 @@ class BinarySearchTree:
 
         if key < node.key:
             if node.left is None:
-                node.left = Node(key)
+                node.left = Node(key) #create left child 
                 self.nodes_written += 1
 
             else:
-                self._insert_recursive(node.left, key)
+                self._insert_recursive(node.left, key) #go down in the subtree
         if key > node.key:
             if node.right is None:
-                node.right = Node(key)
+                node.right = Node(key) #create right child
                 self.nodes_written += 1
             else:
-                self._insert_recursive(node.right, key)
+                self._insert_recursive(node.right, key) #go down in the subtree
 
     def search(self, key):
         self.nodes_read = 0  # reset counter before each new search operation
                              # Observation: counter for written nodes will be always 0
         self.nodes_writte = 0
-        found = self._search_recursive(self.root, key)
+        found = self._search_recursive(self.root, key) #search start always from the tree root
         return found
 
     def _search_recursive(self, node, key):
@@ -56,9 +56,9 @@ class BinarySearchTree:
         if key == node.key:
             return True
         elif key < node.key:
-            return self._search_recursive(node.left, key)
+            return self._search_recursive(node.left, key) #move to the left subtree
         else:
-            return self._search_recursive(node.right, key)
+            return self._search_recursive(node.right, key) #move to the right subtree
 
     def delete(self, key):
         # reset counters before each new delete operation
@@ -74,9 +74,9 @@ class BinarySearchTree:
         self.nodes_read += 1
 
         if key < node.key:
-            node.left = self._delete_recursive(node.left, key)
+            node.left = self._delete_recursive(node.left, key) #move to the left subtree
         elif key > node.key:
-            node.right = self._delete_recursive(node.right, key)
+            node.right = self._delete_recursive(node.right, key) #move to the right subtree
         else:
             # key found
             if node.left is None:
@@ -87,6 +87,8 @@ class BinarySearchTree:
                 return node.left
 
             # node with two child: find inorder successor
+            # inorder successor: node that comes immediately after the given node in an inorder 
+                               # traversal of the tree
             min_larger_node = self._find_min(node.right)
             node.key = min_larger_node.key
             self.nodes_written += 1  # update key
